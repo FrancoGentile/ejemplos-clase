@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+ <HEAD>
+  <TITLE>Fixed Deposit Calculator-DepositCaculator v1.0</TITLE>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+	
+	var principal;//principal
+	var savingperiod;//storage period
+	var rate;//interest rate
+	var lastperiod;//duration
+
+	//verify if it is a number
+	function validate(ctl)
+	{
+		if (isNaN(ctl.value))//|| ctl.value == "")
+		{
+			alrt(ctl.title + "must be a number!")
+			ctl.select();
+			ctl.focus();
+		}
+	}
+
+	//verify that it is empty
+	function validate2()
+	{
+		var tmp;
+		var f=document.forms["calcform"];
+		for(var i=0; i<f.elements.length-1; i++){
+			tmp = f.elements[i].value.replace(" ","")
+			if (tmp=="")
+			{
+				alrt(f.elements[i].title + "Cannot be empty!")
+				return false;
+			}
+			else
+			{
+				switch(f.elements[i].name){
+					case "t_principal":
+					principal = tmp;
+					case "s_savingperiod":
+					savingperiod = tmp;
+					case "t_rate":
+					rate = tmp/100;
+					case "t_lastperiod":
+					lastperiod = tmp;
+				}
+			}
+		}
+		return true;
+	}
+
+	function calc()
+	{
+		
+		//Formula: Sum of principal and interest = principal*((1+interest rate*(deposit period/12))^(duration/deposit period))
+		return (principal*(Math.pow((1+rate*(savingperiod/12)),Math.floor(lastperiod/savingperiod))));
+	}
+
+	function year2month()
+	{
+		document.forms["calcform"].elements["t_lastperiod"].value = 
+		document.forms["calcform"].elements["t_lastperiod"].value * 12;
+	}
+
+	function docalc()
+	{
+		var total=0;
+
+		if (validate2())
+		{
+			//alert ("NULL check pass!");
+			var remainder = lastperiod% savingperiod;
+			if (remainder != 0)
+			{
+				if (confirm("Duration is not an integral multiple of the deposit period, the last deposit period will be treated as a current deposit without calculating interest rates!"))
+				{
+					total = calc();
+				}
+			}
+			else
+			{
+				total = calc();
+			}
+		}
+
+		if (total != 0)
+		{
+			document.forms["calcform"].elements["t_result"].value=total;
+		}
+	}
+	
+//-->
+</SCRIPT>
+ </HEAD>
+
+ <BODY>
+  <FORM name="calcform">
+	<H1>Fixed Deposit Calculator</H1>
+	<h5>
+	DepositCaculator v1.0
+	<BR>
+	This procedure is based on the following formula (duration and deposit period are all in months)
+	<BR>
+	<font color="#FF0000">Sum of principal and interest = principal*((1+interest rate*(deposit period/12))^(duration/deposit period))</font>
+	</h5>
+
+	<label for = "t_principal">Principal</label>
+	<INPUT TYPE="text" NAME="t_principal" title="Principal" οnblur="validate(this)">
+	<font color=#FF0000>*</font>
+	<BR>
+
+	<label for = "s_savingperiod">Storage period</label>
+	<SELECT NAME="s_savingperiod" title="savingperiod" οnblur="validate(this)">
+		<OPTION VALUE="3" SELECTED>3.months</OPTION>
+		<OPTION VALUE="6">6.months</OPTION>
+		<OPTION VALUE="12">One ​​year</OPTION>
+		<OPTION VALUE="24">Two years</OPTION>
+		<OPTION VALUE="36">3.years</OPTION>
+		<OPTION VALUE="60">5.years</OPTION>
+	</SELECT>
+	<font color=#FF0000>*</font>
+	<BR>
+
+	<label for = "t_rate">interest rate</label>
+	<INPUT TYPE="text" NAME="t_rate" title="interest rate" οnblur="validate(this)">
+	<font color=#FF0000>*</font>
+	<A HREF="http://www.cmbchina.com/CmbWebPubInfo/InterestRate.aspx?chnl=ckrate" target="blank">Interest rate query</A>
+	<BR>
+
+	<label for = "t_lastperiod">Duration</label>
+	<INPUT TYPE="text" NAME="t_lastperiod" title="Duration" οnblur="validate(this)">
+	<font color=#FF0000>*</font>
+	How long to save, in months, you can fill in the number of years first, use [year to month] to convert before calculation
+	<BR>
+
+	<label for = "t_lastperiod">Calculation</label>
+	<INPUT TYPE="button" VALUE="year to month" title="year to month" ONCLICK="year2month()">
+	<INPUT TYPE="button" VALUE="calculation" title="calculation" ONCLICK="docalc()">
+	<INPUT TYPE="reset" VALUE="reset" title="reset">
+	<BR>
+
+	<label for = "t_result">results</label>
+	<INPUT TYPE="text" NAME="t_result" title="Primary and interest sum" value="Primary and interest sum based on principal and interest renewal" disabled>
+	<BR>
+
+	<p>© <a href="http://blog.csdn.net/t0nsha/" target="blank">t0nsha</a href>
+  </FORM>
+ </BODY>
+</HTML>
